@@ -26,7 +26,8 @@ struct Card {
         // both are static
         // TODO: generate a 32 bits random number,
         // check that it's unique globally
-        return uniqueIdentifierFactory + 1
+        uniqueIdentifierFactory += 1
+        return uniqueIdentifierFactory
     }
     
     init() {

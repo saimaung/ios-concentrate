@@ -40,24 +40,57 @@ class ViewController: UIViewController {
         / 2)
     
     // This is being Modeled as Identifier in Card.swift - the model class
-    let cardEmojis: [String] = ["👻", "🎃", "👻", "🎃"]
+    var storedEmojis: [String] = ["👻", "🐶", "🐵", "🎃", "🐔", "🦖", "🐳", "🐬", "🐡", "🦁"]
+    
+    // [Int, String]() - another syntax
+    // CRITICAL: map IDENTIFIER to EMOJI
+    // CONTROLLER -> VIEW MAP. MODEL info passed in via CONTROLLER
+    var identifierEmojiMap = Dictionary<Int, String>()
     
     // @TODO: Implement emoji func
-    func emoji(for card: Card) -> String {
-        return "👻"
+    func getEmojiString(for card: Card) -> String {
+        
+        // MAP Identifier to Emoji
+        // That is draw a line between Controller and View
+        // Model passed in from Controller
+        // protect aginst removing all Emojis
+        if identifierEmojiMap[card.identifier] == nil,
+            storedEmojis.count > 0 {
+            // pseudo random number generator
+            // from 0 to __upper_bound (Exclusive)
+            let emojiStringIndex =
+                Int(arc4random_uniform(uint(storedEmojis.count)))
+            //identifierEmojiMap[card.identifier] = cardEmojis[emojiStringIndex]
+            // SET <key, value>
+            // then remove from cardEmojis since it's seen
+            identifierEmojiMap[card.identifier] = storedEmojis.remove(at: emojiStringIndex)
+        }
+        
+        // dictinary return Optional String since the key might not be in the Dictionary
+        // if not there, get OptionalNotSet else get OptionalSet String associated value
+        // let emojiChose = emojiMap[card.identifier]
+        // if set
+        /*
+        if emojiMap[card.identifier] != nil {
+            return emojiMap[card.identifier]! // ! unwrap associated String value
+        } */
+        // equivalent as above code if else block
+        // if SET returns emojiMap[card.identifier]
+        // if NIL returns "?"
+        return identifierEmojiMap[card.identifier] ?? "⽆"
     }
     
     func updateViewFromModel() {
+        // Everytime user touch a card, all card need to be updated
         // indices return COUNTABLE RANGE SEQUENCE of Int
         for index in cardButtons.indices {
-            // Map (matches) button to card
+            // Map (matches) button to card SETTER
             let button = cardButtons[index]
             let card = game.cards[index]
             
             if (card.isFaceUp) {
                 // if side is the one with Emoji
-                flipCount += 1
-                button.setTitle(emoji(for: card), for: UIControl.State.normal)
+                button.setTitle(getEmojiString(for: card), for: UIControl.State.normal)
                 button.backgroundColor = UIColor.white
                 
             } else {
@@ -71,6 +104,7 @@ class ViewController: UIViewController {
                 button.backgroundColor = card.isMatched ? #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0) : UIColor.systemYellow
             }
         }
+        flipCount += 1
     }
     
     
